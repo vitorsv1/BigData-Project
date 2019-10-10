@@ -20,7 +20,7 @@ id_usuario int NOT NULL,
 id_passaro int NOT NULL,
 PRIMARY KEY (id_usuario, id_passaro),
 FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
-FOREIGN KEY (id_passaro) REFERENCES passaros(id_passaro)
+FOREIGN KEY (id_passaro) REFERENCES passaro(id_passaro)
 );
 
 create table if not exists red_soc_passaros.post (
