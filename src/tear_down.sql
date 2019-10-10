@@ -1,0 +1,1 @@
+DROP DATABASE IF EXISTS red_soc_passaros;

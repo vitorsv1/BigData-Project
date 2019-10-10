@@ -1,0 +1,7 @@
+{
+    "MYSQL": "C:\\Program Files\\MySQL\\MySQL Workbench 8.0 CE\\mysql",
+    "HOST": "localhost",
+    "USER": "megadados",
+    "PASS": "megadados2019",
+    "LOGFILE": "log.txt"
+}
