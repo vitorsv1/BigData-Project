@@ -2,6 +2,7 @@ drop database if exists red_soc_passaros;
 create database if not exists red_soc_passaros;
 create table if not exists red_soc_passaros.usuarios (
 id int PRIMARY KEY auto_increment NOT NULL,
+nick varchar(32) UNIQUE,
 nome varchar(32),
 sobrenome varchar(32),
 email varchar(32),
