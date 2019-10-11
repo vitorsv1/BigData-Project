@@ -30,7 +30,7 @@ class TestProjeto(unittest.TestCase):
         
         nick = "Jukes"
         nome = "Junior"
-        sobrenome = "Test"
+        sobrenome = "Cria"
         email = "junior.test@hotmail.com"
         cidade = "Testlandia"
 
@@ -47,6 +47,26 @@ class TestProjeto(unittest.TestCase):
 
         id = acha_usuario(conn, 'pokadskopdsa')
         self.assertIsNone(id)
+
+    def test_remove_usuario(self):
+        conn = self.__class__.connection
+
+        nick = "Jukes"
+        nome = "Junior"
+        sobrenome = "Remove"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+        criar_usuario(conn, nick, nome, sobrenome, email, cidade)
+        id = acha_usuario(conn, nick)
+        
+        res = lista_usuario(conn)
+        self.assertCountEqual(res, (id,))
+
+        remove_usuario(conn, id)
+
+        res = lista_usuario(conn)
+        self.assertFalse(res)
+
 
 def run_sql_script(filename):
     global config

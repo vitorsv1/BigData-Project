@@ -26,6 +26,7 @@ FOREIGN KEY (id_passaro) REFERENCES passaro(id_passaro)
 create table if not exists red_soc_passaros.post (
 id_post int PRIMARY KEY auto_increment NOT NULL,
 id_usuario int,
+ativo tinyint default 1,
 titulo varchar(32) NOT NULL,
 texto text,
 url varchar(32),
