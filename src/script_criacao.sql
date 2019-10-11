@@ -6,7 +6,8 @@ nick varchar(32) UNIQUE,
 nome varchar(32),
 sobrenome varchar(32),
 email varchar(32),
-cidade varchar(32)
+cidade varchar(32),
+ativo tinyint default 1
 );
 
 create table if not exists red_soc_passaros.passaro (

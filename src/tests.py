@@ -67,6 +67,28 @@ class TestProjeto(unittest.TestCase):
         res = lista_usuario(conn)
         self.assertFalse(res)
 
+    def test_desativa_usuario(self):
+        conn = self.__class__.connection
+
+        nick = "Jukes"
+        nome = "Junior"
+        sobrenome = "Desativa"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+        criar_usuario(conn, nick, nome, sobrenome, email, cidade)
+        id = acha_usuario(conn, nick)
+
+        res = lista_usuario(conn)
+        self.assertCountEqual(res, (id,))
+
+        remove_usuario(conn, id)
+
+        res = status_usuario(conn, id)
+        if (res == 1):
+            res = True
+        else:
+            res = False
+        self.assertFalse(res)
 
 def run_sql_script(filename):
     global config

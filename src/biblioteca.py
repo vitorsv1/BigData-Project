@@ -28,7 +28,7 @@ def acha_usuario(conn, nick):
 
 def remove_usuario(conn, id):
     with conn.cursor() as cursor:
-        cursor.execute('DELETE FROM usuario WHERE id=%s', (id))
+        cursor.execute('UPDATE usuario SET ativo=0 WHERE id_usuario=%s', (id))
     
 def muda_nick_usuario(conn, id, novo_nick):
     with conn.cursor() as cursor:
@@ -36,6 +36,15 @@ def muda_nick_usuario(conn, id, novo_nick):
             cursor.execute('UPDATE usuario SET nick=%s where id_usuario=%s', (novo_nick, id))
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso alterar nick do id {id} para {novo_nick} na tabela usuario')
+
+def status_usuario(conn, id):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT ativo FROM usuario WHERE id_usuario=%s', (id))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
 
 def lista_usuario(conn):
     with conn.cursor() as cursor:
