@@ -34,10 +34,10 @@ class TestProjeto(unittest.TestCase):
         email = "junior.test@hotmail.com"
         cidade = "Testlandia"
 
-        cria_usuario(conn, nick, nome, sobrenome, email, cidade)
+        adiciona_usuario(conn, nick, nome, sobrenome, email, cidade)
 
         try:
-            cria_usuario(conn, nick, nome, sobrenome, email, cidade)
+            adiciona_usuario(conn, nick, nome, sobrenome, email, cidade)
             self.fail('Não deveria ter adicionado o mesmo usuario duas vezes')
         except ValueError as e:
             pass
@@ -56,7 +56,7 @@ class TestProjeto(unittest.TestCase):
         sobrenome = "Cria"
         email = "junior.test@hotmail.com"
         cidade = "Testlandia"
-        cria_usuario(conn,nick, nome, sobrenome, email, cidade)
+        adiciona_usuario(conn,nick, nome, sobrenome, email, cidade)
 
         id=acha_usuario(conn,"Jukes")
         self.assertIsNotNone(id)
@@ -69,7 +69,7 @@ class TestProjeto(unittest.TestCase):
         sobrenome = "Desativa"
         email = "junior.test@hotmail.com"
         cidade = "Testlandia"
-        cria_usuario(conn, nick, nome, sobrenome, email, cidade)
+        adiciona_usuario(conn, nick, nome, sobrenome, email, cidade)
         id = acha_usuario(conn, nick)
 
         res = lista_usuario(conn)
@@ -104,7 +104,6 @@ class TestProjeto(unittest.TestCase):
         id_novo = acha_usuario(conn,'MecLord')
         self.assertEqual(id,id_novo)
 
-
     def test_lista_usuarios(self):
         conn = self.__class__.connection
         res=lista_usuario(conn)
@@ -113,7 +112,7 @@ class TestProjeto(unittest.TestCase):
         usuariosids=[]
         for i in range(3):
             nick="JuninhoXD{}".format(i)
-            cria_usuario(conn,nick,"Junior","Teste","teste@teste.com","testelandia")
+            adiciona_usuario(conn,nick,"Junior","Teste","teste@teste.com","testelandia")
             usuariosids.append(acha_usuario(conn,nick))
         
         res=lista_usuario(conn)
@@ -125,14 +124,7 @@ class TestProjeto(unittest.TestCase):
         for k in usuariosids:
             res=esta_desativado_usuario(conn, k)
             self.assertFalse(res)
-
     
-
-
-
-
-
-
 
 def run_sql_script(filename):
     global config

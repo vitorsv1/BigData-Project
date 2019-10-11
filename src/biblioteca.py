@@ -6,7 +6,7 @@ connection = pymysql.connect(
     password='megadados2019',
     database='red_soc_passaros')
 
-def cria_usuario(conn, nick, nome, sobrenome, email, cidade):
+def adiciona_usuario(conn, nick, nome, sobrenome, email, cidade):
     query = """
     INSERT INTO usuario (nick, nome, sobrenome, email, cidade) 
     VALUES (%s, %s, %s, %s, %s);
@@ -77,23 +77,25 @@ def lista_preferencia_de_passaro(conn, id_passaro):
         usuarios = tuple(x[0] for x in res)
         return usuarios
 
+##############################################
+
+#                       USUARIO
+
+# ID do post mecionado e ID de quem esta marcando
+#def menciona_usuario_em_post(conn, id_post, id_usuario):
+
+#def visualiza_post(conn, id_post, id_usuario, aparelho, ip, browser, data):
+
+#def lista_visualizadores_post(conn, id_post):
+
+#def lista_posts_visualizados_usuario(conn, id_usuario):
+
+#def lista_usuarios_mencionados_de_usuario(conn, id_usuario):
+
+################################################
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def criar_post(conn, id_usuario, titulo, texto = None, url = None):
+def adiciona_post(conn, id_usuario, titulo, texto = None, url = None):
     query = """
     INSERT INTO post (id_usuario, titulo, texto, url) 
     VALUES (%s, %s, %s, %s);
@@ -118,7 +120,7 @@ def acha_post(conn, titulo):
         else:
             return None
 
-def remove_post(conn, id):
+def desativa_post(conn, id):
     with conn.cursor() as cursor:
         cursor.execute('UPDATE post SET ativo=0 WHERE id_post=%s', (id))
 
@@ -128,6 +130,19 @@ def lista_post(conn):
         res = cursor.fetchall()
         posts = tuple(x[0] for x in res)
         return posts
+
+#################################################
+
+#                       POST
+
+#def adiciona_marca_passaro(conn, id_passaro, id_post):
+
+#def lista_usuarios_mencionados_no_post(conn, id_post):
+
+
+
+#################################################
+
 
 def parser_usuario(texto):
     t = []
