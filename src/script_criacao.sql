@@ -34,7 +34,7 @@ url varchar(32),
 foreign key (id_usuario) references usuario(id_usuario)
 );
 
-create table if not exists red_soc_passaros.mençao (
+create table if not exists red_soc_passaros.mencao (
 id_post int,
 id_usuario int,
 PRIMARY KEY (id_post, id_usuario),
@@ -50,13 +50,13 @@ FOREIGN KEY (id_post) REFERENCES post(id_post),
 FOREIGN KEY (id_passaro) REFERENCES passaro(id_passaro)
 );
 
-create table if not exists red_soc_passaros.visualizaçao (
+create table if not exists red_soc_passaros.visualizacao (
 id_post int,
 id_usuario int,
 aparelho varchar(32),
 ip varchar(32),
 browser varchar(32),
-data_visualizaçao timestamp,
+data_visualizacao timestamp,
 PRIMARY KEY (id_post, id_usuario),
 FOREIGN KEY (id_post) REFERENCES post(id_post),
 FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)

@@ -90,6 +90,19 @@ class TestProjeto(unittest.TestCase):
         cidade = "Testlandia"
 
         cria_usuario(conn, nick, nome, sobrenome, email, cidade)
+        cria_usuario(conn, "Jukera", nome, sobrenome, email, cidade)
+        id = acha_usuario(conn,"Jukera")
+
+        try:
+            muda_nick_usuario(conn, id, "Jukes")
+            self.fail('Não deveria ter mudado o nome.')
+        except ValueError as e:
+            pass
+
+        muda_nick_usuario(conn, id, 'MecLord')
+
+        id_novo = acha_usuario(conn,'MecLord')
+        self.assertEqual(id,id_novo)
 
 
     def test_lista_usuarios(self):
@@ -141,7 +154,7 @@ def setUpModule():
         run_sql_script(filename)
 
 def tearDownModule():
-    run_sql_script('tear_down.sql')
+    run_sql_script('script_criacao.sql')
 
 if __name__ == '__main__':
     global config
