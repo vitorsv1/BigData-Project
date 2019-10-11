@@ -6,7 +6,7 @@ connection = pymysql.connect(
     password='megadados2019',
     database='red_soc_passaros')
 
-def criar_usuario(conn, nick, nome, sobrenome, email, cidade):
+def cria_usuario(conn, nick, nome, sobrenome, email, cidade):
     query = """
     INSERT INTO usuario (nick, nome, sobrenome, email, cidade) 
     VALUES (%s, %s, %s, %s, %s);
@@ -26,7 +26,7 @@ def acha_usuario(conn, nick):
         else:
             return None
 
-def remove_usuario(conn, id):
+def desativa_usuario(conn, id):
     with conn.cursor() as cursor:
         cursor.execute('UPDATE usuario SET ativo=0 WHERE id_usuario=%s', (id))
     
@@ -35,9 +35,9 @@ def muda_nick_usuario(conn, id, novo_nick):
         try:
             cursor.execute('UPDATE usuario SET nick=%s where id_usuario=%s', (novo_nick, id))
         except pymysql.err.IntegrityError as e:
-            raise ValueError(f'Não posso alterar nick do id {id} para {novo_nick} na tabela usuario')
+            raise ValueError('Não posso alterar nick do id {} para {} na tabela usuario'.format(id, novo_nick))
 
-def status_usuario(conn, id):
+def esta_desativado_usuario(conn, id):
     with conn.cursor() as cursor:
         cursor.execute('SELECT ativo FROM usuario WHERE id_usuario=%s', (id))
         res = cursor.fetchone()
@@ -52,6 +52,46 @@ def lista_usuario(conn):
         res = cursor.fetchall()
         usuarios = tuple(x[0] for x in res)
         return usuarios
+
+def adiciona_preferencia_a_passaro(conn, id_usuario, id_passaro):
+    with conn.cursor() as cursor:
+        cursor.execute('INSERT INTO preferencia VALUES(%s,%s)', (id_usuario,id_passaro))
+
+def remove_preferencia_de_passaro(conn, id_usuario, id_passaro):
+        with conn.cursor() as cursor:
+            cursor.execute('DELETE FROM preferencia WHERE id_usuario=%s AND id_passaro=%s',(id_usuario, id_passaro))
+
+# Lista todos os passaros preferidos de um Usuario
+def lista_passaro_de_preferencia(conn, id_usuario):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_passaro FROM preferencia WHERE id_usuario=%s', (id_usuario))
+        res = cursor.fetchall()
+        passaros = tuple(x[0] for x in res)
+        return passaros
+
+#Lista todos os usuarios que preferem um Passaro
+def lista_preferencia_de_passaro(conn, id_passaro):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_usuario FROM preferencia WHERE id_passaro=%s', (id_passaro))
+        res = cursor.fetchall()
+        usuarios = tuple(x[0] for x in res)
+        return usuarios
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def criar_post(conn, id_usuario, titulo, texto = None, url = None):
     query = """

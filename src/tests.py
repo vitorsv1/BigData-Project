@@ -25,7 +25,7 @@ class TestProjeto(unittest.TestCase):
         with conn.cursor() as cursor:
             cursor.execute('ROLLBACK')
 
-    def test_criar_usuario(self):
+    def test_cria_usuario(self):
         conn = self.__class__.connection
         
         nick = "Jukes"
@@ -34,10 +34,10 @@ class TestProjeto(unittest.TestCase):
         email = "junior.test@hotmail.com"
         cidade = "Testlandia"
 
-        criar_usuario(conn, nick, nome, sobrenome, email, cidade)
+        cria_usuario(conn, nick, nome, sobrenome, email, cidade)
 
         try:
-            criar_usuario(conn, nick, nome, sobrenome, email, cidade)
+            cria_usuario(conn, nick, nome, sobrenome, email, cidade)
             self.fail('Não deveria ter adicionado o mesmo usuario duas vezes')
         except ValueError as e:
             pass
@@ -48,24 +48,18 @@ class TestProjeto(unittest.TestCase):
         id = acha_usuario(conn, 'pokadskopdsa')
         self.assertIsNone(id)
 
-    def test_remove_usuario(self):
+    def test_acha_usuario(self):
         conn = self.__class__.connection
-
+        id=10
         nick = "Jukes"
         nome = "Junior"
-        sobrenome = "Remove"
+        sobrenome = "Cria"
         email = "junior.test@hotmail.com"
         cidade = "Testlandia"
-        criar_usuario(conn, nick, nome, sobrenome, email, cidade)
-        id = acha_usuario(conn, nick)
-        
-        res = lista_usuario(conn)
-        self.assertCountEqual(res, (id,))
+        cria_usuario(conn,nick, nome, sobrenome, email, cidade)
 
-        remove_usuario(conn, id)
-
-        res = lista_usuario(conn)
-        self.assertFalse(res)
+        id=acha_usuario(conn,"Jukes")
+        self.assertIsNotNone(id)
 
     def test_desativa_usuario(self):
         conn = self.__class__.connection
@@ -75,20 +69,57 @@ class TestProjeto(unittest.TestCase):
         sobrenome = "Desativa"
         email = "junior.test@hotmail.com"
         cidade = "Testlandia"
-        criar_usuario(conn, nick, nome, sobrenome, email, cidade)
+        cria_usuario(conn, nick, nome, sobrenome, email, cidade)
         id = acha_usuario(conn, nick)
 
         res = lista_usuario(conn)
         self.assertCountEqual(res, (id,))
 
-        remove_usuario(conn, id)
+        desativa_usuario(conn, id)
 
-        res = status_usuario(conn, id)
-        if (res == 1):
-            res = True
-        else:
-            res = False
+        res = esta_desativado_usuario(conn, id)
         self.assertFalse(res)
+
+    def test_muda_nick_usuario(self):
+        conn = self.__class__.connection
+
+        nick = "Jukes"
+        nome = "Junior"
+        sobrenome = "Cria"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+
+        cria_usuario(conn, nick, nome, sobrenome, email, cidade)
+
+
+    def test_lista_usuarios(self):
+        conn = self.__class__.connection
+        res=lista_usuario(conn)
+        self.assertFalse(res)
+        
+        usuariosids=[]
+        for i in range(3):
+            nick="JuninhoXD{}".format(i)
+            cria_usuario(conn,nick,"Junior","Teste","teste@teste.com","testelandia")
+            usuariosids.append(acha_usuario(conn,nick))
+        
+        res=lista_usuario(conn)
+        self.assertCountEqual(res,usuariosids)
+
+        for j in usuariosids:
+            desativa_usuario(conn,j)
+        
+        for k in usuariosids:
+            res=esta_desativado_usuario(conn, k)
+            self.assertFalse(res)
+
+    
+
+
+
+
+
+
 
 def run_sql_script(filename):
     global config
