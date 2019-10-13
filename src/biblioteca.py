@@ -6,7 +6,10 @@ connection = pymysql.connect(
     password='megadados2019',
     database='red_soc_passaros')
 
-# Adiciona um usuario
+########################################################
+#                        ADICIONA                   
+########################################################
+# Adiciona um usuario na tabela usuario
 def adiciona_usuario(conn, nick, nome, sobrenome, email, cidade):
     query = """
     INSERT INTO usuario (nick, nome, sobrenome, email, cidade) 
@@ -15,10 +18,11 @@ def adiciona_usuario(conn, nick, nome, sobrenome, email, cidade):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (nick, nome,sobrenome,email,cidade))
-            cursor.execute("COMMIT")
+            #cursor.execute("COMMIT")
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso inserir {nome} na tabela usuario')
 
+# Adiciona um passaro na tabela passaro
 def adiciona_passaro(conn,especie):
     query = """
     INSERT INTO passaro (especie) 
@@ -27,116 +31,41 @@ def adiciona_passaro(conn,especie):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (especie))
-            cursor.execute("COMMIT")
+            #cursor.execute("COMMIT")
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso inserir {especie} na tabela usuario')
 
-#Acha um usuario pelo Nick
-def acha_usuario(conn, nick):
-    with conn.cursor() as cursor:
-        cursor.execute('SELECT id_usuario FROM usuario WHERE nick = %s', (nick))
-        res = cursor.fetchone()
-        if res:
-            return res[0]
-        else:
-            return None
-
-def acha_passaro(conn, especie):
-    with conn.cursor() as cursor:
-        cursor.execute('SELECT id_passaro FROM passaro WHERE especie = %s', (especie))
-        res = cursor.fetchone()
-        if res:
-            return res[0]
-        else:
-            return None
-
-#Desativa um usuário
-def desativa_usuario(conn, id):
-    with conn.cursor() as cursor:
-        cursor.execute('UPDATE usuario SET ativo=0 WHERE id_usuario=%s', (id))
-    
-#Muda nick de um usuário
-def muda_nick_usuario(conn, id, novo_nick):
-    with conn.cursor() as cursor:
-        try:
-            cursor.execute('UPDATE usuario SET nick=%s where id_usuario=%s', (novo_nick, id))
-        except pymysql.err.IntegrityError as e:
-            raise ValueError('Não posso alterar nick do id {} para {} na tabela usuario'.format(id, novo_nick))
-
-#Verifica se o usuário esta desativado pelo ID
-def esta_desativado_usuario(conn, id):
-    with conn.cursor() as cursor:
-        cursor.execute('SELECT ativo FROM usuario WHERE id_usuario=%s', (id))
-        res = cursor.fetchone()
-        if res:
-            return res[0]
-        else:
-            return None
-
-#Lista os IDs de todos os usuarios
-def lista_usuario(conn):
-    with conn.cursor() as cursor:
-        cursor.execute('SELECT id_usuario FROM usuario')
-        res = cursor.fetchall()
-        usuarios = tuple(x[0] for x in res)
-        return usuarios
-
-#Adiciona um Usuario e um Passaro a tabela Preferencia
+# Adiciona um Usuario e um Passaro a tabela Preferencia
 def adiciona_preferencia_a_passaro(conn, id_usuario, id_passaro):
     with conn.cursor() as cursor:
-        cursor.execute('INSERT INTO preferencia VALUES(%s,%s)', (id_usuario,id_passaro))
+        try:
+            cursor.execute('INSERT INTO preferencia VALUES(%s,%s)', (id_usuario,id_passaro))
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Erro na inserção')
 
-#Remove uma Preferencia dado um ID Usuario e Passaro
-def remove_preferencia_de_passaro(conn, id_usuario, id_passaro):
-        with conn.cursor() as cursor:
-            cursor.execute('DELETE FROM preferencia WHERE id_usuario=%s AND id_passaro=%s',(id_usuario, id_passaro))
-
-# Lista todos os passaros preferidos de um Usuario
-def lista_passaro_de_preferencia(conn, id_usuario):
-    with conn.cursor() as cursor:
-        cursor.execute('SELECT id_passaro FROM preferencia WHERE id_usuario=%s', (id_usuario))
-        res = cursor.fetchall()
-        passaros = tuple(x[0] for x in res)
-        return passaros
-
-#Lista todos os usuarios que preferem um Passaro
-def lista_preferencia_de_passaro(conn, id_passaro):
-    with conn.cursor() as cursor:
-        cursor.execute('SELECT id_usuario FROM preferencia WHERE id_passaro=%s', (id_passaro))
-        res = cursor.fetchall()
-        usuarios = tuple(x[0] for x in res)
-        return usuarios
-
-##############################################
-#                       USUARIO
-# ID do post mecionado e ID de quem esta marcando
-
-def menciona_usuario_em_post(conn, id_post, id_usuario):
+# Adiciona um post
+def adiciona_post(conn, id_usuario, titulo, texto = None, url = None):
     query = """
-    INSERT INTO mencao (id_post,id_usuario) 
-    VALUES (%s, %s);
+    INSERT INTO post (id_usuario, titulo, texto, url) 
+    VALUES (%s, %s, %s, %s);
     """
+
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (id_usuario, titulo, texto, url))
+           # cursor.execute("COMMIT")
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Não posso inserir o post {titulo} na tabela post')
     
-    with conn.cursor() as cursor:
-        try:
-            cursor.execute(query, (id_post,id_usuario))
-            cursor.execute("COMMIT")
-        except pymysql.err.IntegrityError as e:
-            raise ValueError(f'Ja tentou adicionar')
+    usuarios_mencionados=parser_usuario(texto)
+    passaros_mencionados=parser_passaro(texto)
+    for i in usuarios_mencionados:
+        menciona_usuario_em_post(conn,acha_post(conn,titulo),acha_usuario(conn,i))
+    for j in passaros_mencionados:
+        marca_passaro_em_post(conn,acha_passaro(conn,j),acha_post(conn,titulo))
 
-def menciona_passaro_em_post(conn, id_passaro, id_post):
-    query = """
-    INSERT INTO marca_passaro (id_passaro,id_post) 
-    VALUES (%s, %s);
-    """
-    with conn.cursor() as cursor:
-        try:
-            cursor.execute(query, (id_passaro,id_post))
-            cursor.execute("COMMIT")
-        except pymysql.err.IntegrityError as e:
-            raise ValueError(f'Ja tentou adicionar')
-
-def visualiza_post(conn, id_post, id_usuario, aparelho, ip, browser, data_visualizacao):
+# Adiciona visualizacao do usuario
+def adiciona_visualizacao_post(conn, id_post, id_usuario, aparelho, ip, browser, data_visualizacao):
     query = """
     INSERT INTO visualizacao (id_post, id_usuario, aparelho, ip, browser, data_visualizacao)
     VALUES (%s, %s, %s, %s, %s, %s)
@@ -148,64 +77,80 @@ def visualiza_post(conn, id_post, id_usuario, aparelho, ip, browser, data_visual
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Erro na inserção')
 
-def lista_visualizadores_post(conn, id_post):
-    query = """
-    SELECT id_usuario FROM visualizacao WHERE id_post = %s
-    """
 
+
+########################################################
+#                   DESATIVA e REMOVE                   
+########################################################
+
+#Desativa um usuário
+def desativa_usuario(conn, id):
     with conn.cursor() as cursor:
-        cursor.execute(query, (id_post))
-        res = cursor.fetchall()
-        visualizadores = tuple(x[0] for x in res)
-        return visualizadores
-
-def lista_posts_visualizados_usuario(conn, id_usuario):
-    query = """
-    SELECT id_post FROM visualizacao WHERE id_usuario = %s
-    """
-
+        cursor.execute('UPDATE usuario SET ativo=0 WHERE id_usuario=%s', (id))
+  
+#Desativa um post
+def desativa_post(conn, id):
     with conn.cursor() as cursor:
-        cursor.execute(query, (id_usuario))
-        res = cursor.fetchall()
-        posts = tuple(x[0] for x in res)
-        return posts
+        cursor.execute('UPDATE post SET ativo=0 WHERE id_post=%s', (id))
+            cursor.execute('DELETE FROM preferencia WHERE id_usuario=%s AND id_passaro=%s',(id_usuario, id_passaro))
+       
+#Remove uma Preferencia dado um ID Usuario e Passaro
+def remove_preferencia_de_passaro(conn, id_usuario, id_passaro):
+        with conn.cursor() as cursor:
 
-def lista_usuarios_mencionados_de_usuario(conn, id_usuario):
-    query = """
-    SELECT 
-    """
 
+
+########################################################
+#                       STATUS                   
+########################################################
+
+#Verifica se o usuário esta desativado pelo ID
+def esta_desativado_usuario(conn, id):
     with conn.cursor() as cursor:
-        cursor.execute(query, (id_usuario))
-        res = cursor.fetchall()
-        visualizadores = tuple(x[0] for x in res)
-        return visualizadores
+        cursor.execute('SELECT ativo FROM usuario WHERE id_usuario=%s', (id))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
 
-################################################
-
-#Adiciona um post
-def adiciona_post(conn, id_usuario, titulo, texto = None, url = None):
-    query = """
-    INSERT INTO post (id_usuario, titulo, texto, url) 
-    VALUES (%s, %s, %s, %s);
-    """
-
+#Verifica se o usuário esta desativado pelo ID
+def esta_desativado_post(conn, id):
     with conn.cursor() as cursor:
-        try:
-            cursor.execute(query, (id_usuario, titulo, texto, url))
-            cursor.execute("COMMIT")
-        except pymysql.err.IntegrityError as e:
-            raise ValueError(f'Não posso inserir o post {titulo} na tabela post')
+        cursor.execute('SELECT ativo FROM post WHERE id_post=%s', (id))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
 
-    usuarios_mencionados=parser_usuario(texto)
-    passaros_mencionados=parser_passaro(texto)
-    for i in usuarios_mencionados:
-        menciona_usuario_em_post(connection,acha_post(connection,titulo),acha_usuario(connection,i))
-    for j in passaros_mencionados:
-        menciona_passaro_em_post(connection,acha_passaro(connection,j),acha_post(connection,titulo))
-   
 
-#Acha um post
+
+########################################################
+#                       ACHA                   
+########################################################
+
+# Acha um usuario pelo Nick
+def acha_usuario(conn, nick):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_usuario FROM usuario WHERE nick = %s', (nick))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
+
+# Acha um passaro pela Especia
+def acha_passaro(conn, especie):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_passaro FROM passaro WHERE especie = %s', (especie))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
+
+# Acha um post pelo Titulo
 def acha_post(conn, titulo):
     query = """
     SELECT id_post FROM post WHERE titulo=%s
@@ -219,10 +164,137 @@ def acha_post(conn, titulo):
         else:
             return None
 
-#Desativa um post
-def desativa_post(conn, id):
+
+
+########################################################
+#                       MUDA                   
+########################################################
+
+#Muda nick de um usuário
+def muda_nick_usuario(conn, id, novo_nick):
     with conn.cursor() as cursor:
-        cursor.execute('UPDATE post SET ativo=0 WHERE id_post=%s', (id))
+        try:
+            cursor.execute('UPDATE usuario SET nick=%s where id_usuario=%s', (novo_nick, id))
+        except pymysql.err.IntegrityError as e:
+            raise ValueError('Não posso alterar nick do id {} para {} na tabela usuario'.format(id, novo_nick))
+
+
+
+########################################################
+#                 MENCIONA e  MARCA                   
+########################################################
+
+# Menciona um usuario em um post pelos IDs
+def menciona_usuario_em_post(conn, id_post, id_usuario):
+    query = """
+    INSERT INTO mencao (id_post,id_usuario) 
+    VALUES (%s, %s);
+    """
+    
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (id_post,id_usuario))
+           # cursor.execute("COMMIT")
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Ja tentou adicionar')
+
+# Marca um passaro em um post pelos IDs
+def marca_passaro_em_post(conn, id_passaro, id_post):
+    query = """
+    INSERT INTO marca_passaro (id_passaro,id_post) 
+    VALUES (%s, %s);
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (id_passaro,id_post))
+           # cursor.execute("COMMIT")
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Ja tentou adicionar')
+
+
+
+########################################################
+#                       LISTA                   
+########################################################
+
+# Lista os IDs de todos os usuarios
+def lista_usuario(conn):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_usuario FROM usuario')
+        res = cursor.fetchall()
+        usuarios = tuple(x[0] for x in res)
+        return usuarios
+
+# Lista uma Tupla dos IDs na tabela Preferencia       
+def lista_preferencia(conn):
+    query = """
+    SELECT id_usuario, id_passaro FROM preferencia
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        res = cursor.fetchall()
+        preferencias = tuple(x[0:2] for x in res)
+        return preferencias
+
+# Lista os usuarios que visualizaram um post pelo ID do post
+def lista_visualizadores_post(conn, id_post):
+    query = """
+    SELECT id_usuario FROM visualizacao WHERE id_post = %s
+    """
+
+    with conn.cursor() as cursor:
+        cursor.execute(query, (id_post))
+        res = cursor.fetchall()
+        visualizadores = tuple(x[0] for x in res)
+        return visualizadores
+
+# Lista os posts que um usuario viu
+def lista_posts_visualizados_usuario(conn, id_usuario):
+    query = """
+    SELECT id_post FROM visualizacao WHERE id_usuario = %s
+    """
+
+    with conn.cursor() as cursor:
+        cursor.execute(query, (id_usuario))
+        res = cursor.fetchall()
+        posts = tuple(x[0] for x in res)
+        return posts
+
+# Lista os usuarios mencionados por um usuario
+def lista_usuarios_mencionados_de_usuario(conn, id_usuario):
+    query = """
+    SELECT 
+    """
+
+    with conn.cursor() as cursor:
+        cursor.execute(query, (id_usuario))
+        res = cursor.fetchall()
+        visualizadores = tuple(x[0] for x in res)
+        return visualizadores
+
+#Lista as menções
+def lista_mencoes(conn):
+    query="""
+    SELECT id_post, id_usuario FROM mencao
+    """
+
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        res = cursor.fetchall()
+        mencoes = tuple(x[0:2] for x in res)
+        return mencoes
+
+#Lista os passaros marcados
+def lista_marca_passaro(conn):
+    query="""
+    SELECT id_passaro, id_post FROM marca_passaro
+    """
+
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        res = cursor.fetchall()
+        marcacoes = tuple(x[0:2] for x in res)
+        return marcacoes
 
 #Lista os IDs de todos os posts
 def lista_post(conn):
@@ -232,17 +304,14 @@ def lista_post(conn):
         posts = tuple(x[0] for x in res)
         return posts
 
-#################################################
-
-#                       POST
-
-#def adiciona_marca_passaro(conn, id_passaro, id_post):
-
-#def lista_usuarios_mencionados_no_post(conn, id_post):
 
 
-#################################################
+########################################################
+#                       PARSER                   
+########################################################
 
+# Parser para procurar usuarios marcados no texto 
+# retorna lista dos usuarios marcados em ordem
 def parser_usuario(texto):
     t = []
     txt = re.findall(r"@\w+", texto)
@@ -250,6 +319,8 @@ def parser_usuario(texto):
         t.append(txt[i][1:])
     return t
 
+# Parser para procurar passaros marcados 
+# retorna lista dos passaros marcados em ordem
 def parser_passaro(texto):
     t = []
     txt = re.findall(r"#\w+", texto)
