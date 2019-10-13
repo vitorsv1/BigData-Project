@@ -2,8 +2,8 @@ import io, json, logging, os, os.path, subprocess, re, unittest, pymysql
 
 connection = pymysql.connect(
     host='localhost',
-    user='root',
-    password='',
+    user='megadados',
+    password='megadados2019',
     database='red_soc_passaros')
 
 # Adiciona um usuario
@@ -95,7 +95,7 @@ def menciona_usuario_em_post(conn, id_post, id_usuario):
     INSERT INTO mencao (id_post,id_usuario) 
     VALUES (%s, %s);
     """
-    POK="SELECT * FROM mencao"
+    
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (id_post,id_usuario))
@@ -103,15 +103,50 @@ def menciona_usuario_em_post(conn, id_post, id_usuario):
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Ja tentou adicionar')
 
+def visualiza_post(conn, id_post, id_usuario, aparelho, ip, browser, data_visualizacao):
+    query = """
+    INSERT INTO visualizacao (id_post, id_usuario, aparelho, ip, browser, data_visualizacao)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    """
 
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (id_post, id_usuario, aparelho, ip, browser, data_visualizacao))
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Erro na inserção')
 
-#def visualiza_post(conn, id_post, id_usuario, aparelho, ip, browser, data):
+def lista_visualizadores_post(conn, id_post):
+    query = """
+    SELECT id_usuario FROM visualizacao WHERE id_post = %s
+    """
 
-#def lista_visualizadores_post(conn, id_post):
+    with conn.cursor() as cursor:
+        cursor.execute(query, (id_post))
+        res = cursor.fetchall()
+        visualizadores = tuple(x[0] for x in res)
+        return visualizadores
 
-#def lista_posts_visualizados_usuario(conn, id_usuario):
+def lista_posts_visualizados_usuario(conn, id_usuario):
+    query = """
+    SELECT id_post FROM visualizacao WHERE id_usuario = %s
+    """
 
-#def lista_usuarios_mencionados_de_usuario(conn, id_usuario):
+    with conn.cursor() as cursor:
+        cursor.execute(query, (id_usuario))
+        res = cursor.fetchall()
+        posts = tuple(x[0] for x in res)
+        return posts
+
+def lista_usuarios_mencionados_de_usuario(conn, id_usuario):
+    query = """
+    SELECT 
+    """
+
+    with conn.cursor() as cursor:
+        cursor.execute(query, (id_usuario))
+        res = cursor.fetchall()
+        visualizadores = tuple(x[0] for x in res)
+        return visualizadores
 
 ################################################
 
@@ -180,9 +215,4 @@ def parser_passaro(texto):
         t.append(txt[i][1:])
     return t
 
-adiciona_usuario(connection,"junior","n","n","n","p")
-adiciona_post(connection,acha_usuario(connection,"junior"),"Olaa","po","sj")
-lista_post(connection)
-lista_usuario(connection)
-menciona_usuario_em_post(connection,acha_usuario(connection,"junior"),acha_post(connection,"Olaa"))
     

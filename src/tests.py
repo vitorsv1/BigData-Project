@@ -25,7 +25,7 @@ class TestProjeto(unittest.TestCase):
         with conn.cursor() as cursor:
             cursor.execute('ROLLBACK')
 
-    def test_cria_usuario(self):
+    def test_adiciona_usuario(self):
         conn = self.__class__.connection
         
         nick = "Jukes"
@@ -89,8 +89,8 @@ class TestProjeto(unittest.TestCase):
         email = "junior.test@hotmail.com"
         cidade = "Testlandia"
 
-        cria_usuario(conn, nick, nome, sobrenome, email, cidade)
-        cria_usuario(conn, "Jukera", nome, sobrenome, email, cidade)
+        adiciona_usuario(conn, nick, nome, sobrenome, email, cidade)
+        adiciona_usuario(conn, "Jukera", nome, sobrenome, email, cidade)
         id = acha_usuario(conn,"Jukera")
 
         try:
@@ -125,6 +125,89 @@ class TestProjeto(unittest.TestCase):
             res=esta_desativado_usuario(conn, k)
             self.assertFalse(res)
     
+    def test_visualiza_post(self):
+        conn = self.__class__.connection
+
+        nick = "Jukes"
+        nome = "Junior"
+        sobrenome = "Visualiza"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+        adiciona_usuario(conn,nick, nome, sobrenome, email, cidade)
+        id = acha_usuario(conn,nick)
+
+        titulo= "Teste post"
+        texto = "aoskdoapsdk"
+        url = "sokdapodkpao.com"
+        adiciona_post(conn, id,titulo,texto, url)
+        id_post = acha_post(conn, titulo)
+
+        visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+
+        try:
+            visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+            self.fail("Não deveria adicionar uma visualizacao nova")
+        except ValueError as e:
+            pass
+
+    def test_lista_visualizadores_post(self):
+        conn = self.__class__.connection
+        
+        nick = "Jukes"
+        nome = "Junior"
+        sobrenome = "Lista Visualiza"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+        adiciona_usuario(conn,nick, nome, sobrenome, email, cidade)
+        id = acha_usuario(conn,nick)
+
+        titulo= "Teste post2"
+        texto = "aoskdoapsdk"
+        url = "sokdapodkpao.com"
+        adiciona_post(conn, id,titulo,texto, url)
+        id_post = acha_post(conn, titulo)
+
+        visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+
+        res=lista_visualizadores_post(conn, id_post)
+        self.assertTrue(res)
+        
+        usuariosids=[id]
+        for i in range(3):
+            nick="JuninhoXD{}".format(i)
+            adiciona_usuario(conn,nick,"Junior","Teste","teste@teste.com","testelandia")
+            id = acha_usuario(conn,nick)
+            visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+            usuariosids.append(id)
+
+        res=lista_visualizadores_post(conn, id_post)
+        self.assertCountEqual(res,usuariosids)
+     
+    def test_lista_posts_visualizados_usuario(self):
+        conn = self.__class__.connection
+
+        nick = "Jukes"
+        nome = "Junior"
+        sobrenome = "Lista Visualiza"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+        adiciona_usuario(conn,nick, nome, sobrenome, email, cidade)
+        id = acha_usuario(conn,nick)
+
+        titulo= "Teste post2"
+        texto = "aoskdoapsdk"
+        url = "sokdapodkpao.com"
+
+        postsids=[]
+        for i in range(3):
+            titulo="TituloTest{}".format(i)
+            adiciona_post(conn, id,titulo,texto, url)
+            id_post = acha_post(conn, titulo)
+            visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+            postsids.append(id_post)
+
+        res=lista_posts_visualizados_usuario(conn,id)
+        self.assertCountEqual(res,postsids)
 
 def run_sql_script(filename):
     global config

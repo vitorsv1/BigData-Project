@@ -2,7 +2,7 @@ drop database if exists red_soc_passaros;
 create database if not exists red_soc_passaros;
 create table if not exists red_soc_passaros.usuario (
 id_usuario int PRIMARY KEY auto_increment NOT NULL,
-nick varchar(32) UNIQUE,
+nick varchar(32) NOT NULL UNIQUE,
 nome varchar(32),
 sobrenome varchar(32),
 email varchar(32),
@@ -28,7 +28,7 @@ create table if not exists red_soc_passaros.post (
 id_post int PRIMARY KEY auto_increment NOT NULL,
 id_usuario int,
 ativo tinyint default 1,
-titulo varchar(32) NOT NULL,
+titulo varchar(32) NOT NULL UNIQUE,
 texto text,
 url varchar(32),
 foreign key (id_usuario) references usuario(id_usuario)
