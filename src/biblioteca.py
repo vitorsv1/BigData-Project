@@ -91,13 +91,12 @@ def desativa_usuario(conn, id):
 #Desativa um post
 def desativa_post(conn, id):
     with conn.cursor() as cursor:
-        cursor.execute('UPDATE post SET ativo=0 WHERE id_post=%s', (id))
-            cursor.execute('DELETE FROM preferencia WHERE id_usuario=%s AND id_passaro=%s',(id_usuario, id_passaro))
+        cursor.execute('UPDATE post SET ativo=0 WHERE id_post=%s', (id))         
        
 #Remove uma Preferencia dado um ID Usuario e Passaro
 def remove_preferencia_de_passaro(conn, id_usuario, id_passaro):
         with conn.cursor() as cursor:
-
+            cursor.execute('DELETE FROM preferencia WHERE id_usuario=%s AND id_passaro=%s',(id_usuario, id_passaro))
 
 
 ########################################################

@@ -125,7 +125,7 @@ class TestProjeto(unittest.TestCase):
             res=esta_desativado_usuario(conn, k)
             self.assertFalse(res)
     
-    def test_visualiza_post(self):
+    def test_adiciona_visualizacao_post(self):
         conn = self.__class__.connection
 
         nick = "Juks"
@@ -142,10 +142,10 @@ class TestProjeto(unittest.TestCase):
         adiciona_post(conn, id,titulo,texto, url)
         id_post = acha_post(conn, titulo)
 
-        visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+        adiciona_visualizacao_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
 
         try:
-            visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+            adiciona_visualizacao_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
             self.fail("Não deveria adicionar uma visualizacao nova")
         except ValueError as e:
             pass
@@ -167,7 +167,7 @@ class TestProjeto(unittest.TestCase):
         adiciona_post(conn, id,titulo,texto, url)
         id_post = acha_post(conn, titulo)
 
-        visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+        adiciona_visualizacao_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
 
         res=lista_visualizadores_post(conn, id_post)
         self.assertTrue(res)
@@ -177,7 +177,7 @@ class TestProjeto(unittest.TestCase):
             nick="JuninhoXD{}".format(i)
             adiciona_usuario(conn,nick,"Junior","Teste","teste@teste.com","testelandia")
             id = acha_usuario(conn,nick)
-            visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+            adiciona_visualizacao_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
             usuariosids.append(id)
 
         res=lista_visualizadores_post(conn, id_post)
@@ -203,7 +203,7 @@ class TestProjeto(unittest.TestCase):
             titulo="TituloTest{}".format(i)
             adiciona_post(conn, id,titulo,texto, url)
             id_post = acha_post(conn, titulo)
-            visualiza_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+            adiciona_visualizacao_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
             postsids.append(id_post)
 
         res=lista_posts_visualizados_usuario(conn,id)
