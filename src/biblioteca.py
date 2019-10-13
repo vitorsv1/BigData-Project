@@ -15,13 +15,35 @@ def adiciona_usuario(conn, nick, nome, sobrenome, email, cidade):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (nick, nome,sobrenome,email,cidade))
+            cursor.execute("COMMIT")
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso inserir {nome} na tabela usuario')
+
+def adiciona_passaro(conn,especie):
+    query = """
+    INSERT INTO passaro (especie) 
+    VALUES (%s);
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (especie))
+            cursor.execute("COMMIT")
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Não posso inserir {especie} na tabela usuario')
 
 #Acha um usuario pelo Nick
 def acha_usuario(conn, nick):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_usuario FROM usuario WHERE nick = %s', (nick))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
+
+def acha_passaro(conn, especie):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_passaro FROM passaro WHERE especie = %s', (especie))
         res = cursor.fetchone()
         if res:
             return res[0]
@@ -86,10 +108,9 @@ def lista_preferencia_de_passaro(conn, id_passaro):
         return usuarios
 
 ##############################################
-
 #                       USUARIO
-
 # ID do post mecionado e ID de quem esta marcando
+
 def menciona_usuario_em_post(conn, id_post, id_usuario):
     query = """
     INSERT INTO mencao (id_post,id_usuario) 
@@ -99,7 +120,19 @@ def menciona_usuario_em_post(conn, id_post, id_usuario):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (id_post,id_usuario))
+            cursor.execute("COMMIT")
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Ja tentou adicionar')
 
+def menciona_passaro_em_post(conn, id_passaro, id_post):
+    query = """
+    INSERT INTO marca_passaro (id_passaro,id_post) 
+    VALUES (%s, %s);
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (id_passaro,id_post))
+            cursor.execute("COMMIT")
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Ja tentou adicionar')
 
@@ -160,8 +193,17 @@ def adiciona_post(conn, id_usuario, titulo, texto = None, url = None):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (id_usuario, titulo, texto, url))
+            cursor.execute("COMMIT")
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso inserir o post {titulo} na tabela post')
+
+    usuarios_mencionados=parser_usuario(texto)
+    passaros_mencionados=parser_passaro(texto)
+    for i in usuarios_mencionados:
+        menciona_usuario_em_post(connection,acha_post(connection,titulo),acha_usuario(connection,i))
+    for j in passaros_mencionados:
+        menciona_passaro_em_post(connection,acha_passaro(connection,j),acha_post(connection,titulo))
+   
 
 #Acha um post
 def acha_post(conn, titulo):
