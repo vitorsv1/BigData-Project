@@ -2,8 +2,8 @@ import io, json, logging, os, os.path, subprocess, re, unittest, pymysql
 
 connection = pymysql.connect(
     host='localhost',
-    user='megadados',
-    password='megadados2019',
+    user='root',
+    password='',
     database='red_soc_passaros')
 
 # Adiciona um usuario
@@ -90,7 +90,20 @@ def lista_preferencia_de_passaro(conn, id_passaro):
 #                       USUARIO
 
 # ID do post mecionado e ID de quem esta marcando
-#def menciona_usuario_em_post(conn, id_post, id_usuario):
+def menciona_usuario_em_post(conn, id_post, id_usuario):
+    query = """
+    INSERT INTO mencao (id_post,id_usuario) 
+    VALUES (%s, %s);
+    """
+    POK="SELECT * FROM mencao"
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (id_post,id_usuario))
+
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Ja tentou adicionar')
+
+
 
 #def visualiza_post(conn, id_post, id_usuario, aparelho, ip, browser, data):
 
@@ -153,7 +166,6 @@ def lista_post(conn):
 
 #################################################
 
-
 def parser_usuario(texto):
     t = []
     txt = re.findall(r"@\w+", texto)
@@ -167,3 +179,10 @@ def parser_passaro(texto):
     for i in range(len(txt)):
         t.append(txt[i][1:])
     return t
+
+adiciona_usuario(connection,"junior","n","n","n","p")
+adiciona_post(connection,acha_usuario(connection,"junior"),"Olaa","po","sj")
+lista_post(connection)
+lista_usuario(connection)
+menciona_usuario_em_post(connection,acha_usuario(connection,"junior"),acha_post(connection,"Olaa"))
+    
