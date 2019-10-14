@@ -1,5 +1,6 @@
 drop database if exists red_soc_passaros;
 create database if not exists red_soc_passaros;
+
 create table if not exists red_soc_passaros.usuario (
 id_usuario int PRIMARY KEY auto_increment NOT NULL,
 nick varchar(32) NOT NULL UNIQUE,
@@ -23,6 +24,7 @@ PRIMARY KEY (id_usuario, id_passaro),
 FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
 FOREIGN KEY (id_passaro) REFERENCES passaro(id_passaro)
 );
+
 
 create table if not exists red_soc_passaros.post (
 id_post int PRIMARY KEY auto_increment NOT NULL,
@@ -61,3 +63,15 @@ PRIMARY KEY (id_post, id_usuario),
 FOREIGN KEY (id_post) REFERENCES post(id_post),
 FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
+
+DELIMITER $$
+CREATE TRIGGER red_soc_passaros.Desativa_post 
+	AFTER UPDATE
+	ON red_soc_passaros.usuario
+	FOR EACH ROW BEGIN
+		IF NEW.ativo = 0 THEN
+			UPDATE red_soc_passaros.post SET post.ativo=0
+            WHERE id_usuario=new.id_usuario;
+		END IF;
+	END$$
+DELIMITER ;

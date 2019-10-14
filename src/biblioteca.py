@@ -18,7 +18,6 @@ def adiciona_usuario(conn, nick, nome, sobrenome, email, cidade):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (nick, nome,sobrenome,email,cidade))
-            #cursor.execute("COMMIT")
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso inserir {nome} na tabela usuario')
 
@@ -31,7 +30,6 @@ def adiciona_passaro(conn,especie):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (especie))
-            #cursor.execute("COMMIT")
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso inserir {especie} na tabela usuario')
 
@@ -53,7 +51,6 @@ def adiciona_post(conn, id_usuario, titulo, texto = None, url = None):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (id_usuario, titulo, texto, url))
-           # cursor.execute("COMMIT")
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Não posso inserir o post {titulo} na tabela post')
     
@@ -193,7 +190,7 @@ def menciona_usuario_em_post(conn, id_post, id_usuario):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (id_post,id_usuario))
-           # cursor.execute("COMMIT")
+           # 
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Ja tentou adicionar')
 
@@ -206,7 +203,7 @@ def marca_passaro_em_post(conn, id_passaro, id_post):
     with conn.cursor() as cursor:
         try:
             cursor.execute(query, (id_passaro,id_post))
-           # cursor.execute("COMMIT")
+           # 
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Ja tentou adicionar')
 
