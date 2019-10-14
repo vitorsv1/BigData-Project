@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)#marca_passaro -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="author" content="WB Datadict">
+  <meta name="description" content="red_soc_passaros Data Dictionary.">
+  <title>red_soc_passaros Data Dictionary</title>
+  <script src="./red_soc_passaros Data Dictionary_files/jquery.min.js.download"></script>
+  <script>
+    // Highlight table corresponding to the current fragment in the URL.
+    $(document).ready(function(){
+      $("a").click(function() {
+        var elem = $(this);
+        // Remove all classes from tables.
+        $("table").removeClass( "focused" )
+        // Get a.href value and extract its fragment id.
+        var id = elem.attr("href");
+        // Highlight table using fragment id.
+        $(id).addClass( "focused" );
+      });
+    });
+  </script>
+  <style type="text/css">
+    a {
+        text-decoration: none;
+    }
+    abbr {
+        cursor: help;
+    }
+    header {
+        color: #6A6A6A;
+        text-align: right;
+    }
+    table {
+        border-collapse: collapse;
+        margin-bottom: 30px;
+        width: 100%;
+    }
+    table caption {
+        font-size: 120%;
+        font-weight: bold;
+    }
+    table, td, th {
+        border-color: silver;
+        border-style: solid;
+        border-width: 1px;
+    }
+    caption {
+        color: black;
+    }
+    td, th {
+        padding: 1em;
+    }
+    tr:hover {
+        color: #333;
+        background-color: #F2F2F2;
+    }
+    th {
+        background-color: #F5F5F5;
+    }
+    td {
+        color: #6A6A6A;
+    }
+    ul {
+        font-style: italic;
+    }
+    .centered {
+        text-align: center;
+    }
+    .field {
+        color: #4C4C4C;
+        font-weight: bold;
+    }
+    .focused {
+        outline-color: aqua;
+        outline-style: solid;
+        outline-width: thin;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1> Vitor Satyro e Lucas Vaz<br> red_soc_passaros<br> Dicionario de Dados - Rede Sociais de Passaros
+    
+    </h1>
+    <p>
+      <em>2019-10-13</em>
+    </p>
+    <p>
+      <em></em>
+    </p>
+  </header>
+
+  <nav><h2>Index</h2><ul><li><a href="#marca_passaro">marca_passaro</a></li><li><a href="#mencao">mencao</a></li><li><a href="#passaro">passaro</a></li><li><a href="#post">post</a></li><li><a href="#preferencia">preferencia</a></li><li><a href="#usuario">usuario</a></li><li><a href="#visualizacao">visualizacao</a></li></ul></nav>
+
+  <div><table id="marca_passaro" class="focused"><caption>marca_passaro</caption><tbody><tr><td colspan="12"></td></tr><tr><th>Column name</th><th>DataType</th><th><abbr title="Primary Key">PK</abbr></th><th><abbr title="Foreign Key">FK</abbr></th><th><abbr title="Not Null">NN</abbr></th><th><abbr title="Unique">UQ</abbr></th><th><abbr title="Binary">BIN</abbr></th><th><abbr title="Unsigned">UN</abbr></th><th><abbr title="Zero Fill">ZF</abbr></th><th><abbr title="Auto Increment">AI</abbr></th><th>Default</th><th>Comment</th></tr><tr><td class="field">id_passaro</td><td>INT(11)</td><td class="centered">✔</td><td class="centered"><a href="#passaro">✔ passaro.id_passaro</a></td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td>ID do passaro marcado</td></tr><tr><td class="field">id_post</td><td>INT(11)</td><td class="centered">✔</td><td class="centered"><a href="#post">✔ post.id_post</a></td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td></td></tr></tbody></table><table id="mencao"><caption>mencao</caption><tbody><tr><td colspan="12"></td></tr><tr><th>Column name</th><th>DataType</th><th><abbr title="Primary Key">PK</abbr></th><th><abbr title="Foreign Key">FK</abbr></th><th><abbr title="Not Null">NN</abbr></th><th><abbr title="Unique">UQ</abbr></th><th><abbr title="Binary">BIN</abbr></th><th><abbr title="Unsigned">UN</abbr></th><th><abbr title="Zero Fill">ZF</abbr></th><th><abbr title="Auto Increment">AI</abbr></th><th>Default</th><th>Comment</th></tr><tr><td class="field">id_post</td><td>INT(11)</td><td class="centered">✔</td><td class="centered"><a href="#post">✔ post.id_post</a></td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td></td></tr><tr><td class="field">id_usuario</td><td>INT(11)</td><td class="centered">✔</td><td class="centered"><a href="#usuario">✔ usuario.id_usuario</a></td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td>ID do usuario mencionado</td></tr></tbody></table><table id="passaro" class=""><caption>passaro</caption><tbody><tr><td colspan="12"></td></tr><tr><th>Column name</th><th>DataType</th><th><abbr title="Primary Key">PK</abbr></th><th><abbr title="Foreign Key">FK</abbr></th><th><abbr title="Not Null">NN</abbr></th><th><abbr title="Unique">UQ</abbr></th><th><abbr title="Binary">BIN</abbr></th><th><abbr title="Unsigned">UN</abbr></th><th><abbr title="Zero Fill">ZF</abbr></th><th><abbr title="Auto Increment">AI</abbr></th><th>Default</th><th>Comment</th></tr><tr><td class="field">id_passaro</td><td>INT(11)</td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">✔</td><td></td><td></td></tr><tr><td class="field">especie</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr></tbody></table><table id="post"><caption>post</caption><tbody><tr><td colspan="12"></td></tr><tr><th>Column name</th><th>DataType</th><th><abbr title="Primary Key">PK</abbr></th><th><abbr title="Foreign Key">FK</abbr></th><th><abbr title="Not Null">NN</abbr></th><th><abbr title="Unique">UQ</abbr></th><th><abbr title="Binary">BIN</abbr></th><th><abbr title="Unsigned">UN</abbr></th><th><abbr title="Zero Fill">ZF</abbr></th><th><abbr title="Auto Increment">AI</abbr></th><th>Default</th><th>Comment</th></tr><tr><td class="field">id_post</td><td>INT(11)</td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">✔</td><td></td><td></td></tr><tr><td class="field">id_usuario</td><td>INT(11)</td><td class="centered">&nbsp;</td><td class="centered"><a href="#usuario">✔ usuario.id_usuario</a></td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td>ID do usuario que criou o post</td></tr><tr><td class="field">ativo</td><td>TINYINT(4)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>'1'</td><td>Status do post. Se ativo é 1 se não é 0</td></tr><tr><td class="field">titulo</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">✔</td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td></td></tr><tr><td class="field">texto</td><td>TEXT</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr><tr><td class="field">url</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr></tbody></table><table id="preferencia"><caption>preferencia</caption><tbody><tr><td colspan="12"></td></tr><tr><th>Column name</th><th>DataType</th><th><abbr title="Primary Key">PK</abbr></th><th><abbr title="Foreign Key">FK</abbr></th><th><abbr title="Not Null">NN</abbr></th><th><abbr title="Unique">UQ</abbr></th><th><abbr title="Binary">BIN</abbr></th><th><abbr title="Unsigned">UN</abbr></th><th><abbr title="Zero Fill">ZF</abbr></th><th><abbr title="Auto Increment">AI</abbr></th><th>Default</th><th>Comment</th></tr><tr><td class="field">id_usuario</td><td>INT(11)</td><td class="centered">✔</td><td class="centered"><a href="#usuario">✔ usuario.id_usuario</a></td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td>ID do usuario que prefere</td></tr><tr><td class="field">id_passaro</td><td>INT(11)</td><td class="centered">✔</td><td class="centered"><a href="#passaro">✔ passaro.id_passaro</a></td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td>ID do passaro preferido</td></tr></tbody></table><table id="usuario"><caption>usuario</caption><tbody><tr><td colspan="12"></td></tr><tr><th>Column name</th><th>DataType</th><th><abbr title="Primary Key">PK</abbr></th><th><abbr title="Foreign Key">FK</abbr></th><th><abbr title="Not Null">NN</abbr></th><th><abbr title="Unique">UQ</abbr></th><th><abbr title="Binary">BIN</abbr></th><th><abbr title="Unsigned">UN</abbr></th><th><abbr title="Zero Fill">ZF</abbr></th><th><abbr title="Auto Increment">AI</abbr></th><th>Default</th><th>Comment</th></tr><tr><td class="field">id_usuario</td><td>INT(11)</td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">✔</td><td></td><td></td></tr><tr><td class="field">nick</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">✔</td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td></td></tr><tr><td class="field">nome</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr><tr><td class="field">sobrenome</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr><tr><td class="field">email</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr><tr><td class="field">cidade</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr><tr><td class="field">ativo</td><td>TINYINT(4)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>'1'</td><td>Status do usuario. Se ativo é 1 se não é 0</td></tr></tbody></table><table id="visualizacao"><caption>visualizacao</caption><tbody><tr><td colspan="12"></td></tr><tr><th>Column name</th><th>DataType</th><th><abbr title="Primary Key">PK</abbr></th><th><abbr title="Foreign Key">FK</abbr></th><th><abbr title="Not Null">NN</abbr></th><th><abbr title="Unique">UQ</abbr></th><th><abbr title="Binary">BIN</abbr></th><th><abbr title="Unsigned">UN</abbr></th><th><abbr title="Zero Fill">ZF</abbr></th><th><abbr title="Auto Increment">AI</abbr></th><th>Default</th><th>Comment</th></tr><tr><td class="field">id_post</td><td>INT(11)</td><td class="centered">✔</td><td class="centered"><a href="#post">✔ post.id_post</a></td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td></td></tr><tr><td class="field">id_usuario</td><td>INT(11)</td><td class="centered">✔</td><td class="centered"><a href="#usuario">✔ usuario.id_usuario</a></td><td class="centered">✔</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td></td><td>ID do usuario que visualizou</td></tr><tr><td class="field">aparelho</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr><tr><td class="field">ip</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr><tr><td class="field">browser</td><td>VARCHAR(32)</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr><tr><td class="field">data_visualizacao</td><td>TIMESTAMP</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td class="centered">&nbsp;</td><td>NULL</td><td></td></tr></tbody></table></div>
+
+
+</body></html>
