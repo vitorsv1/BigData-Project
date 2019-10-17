@@ -350,11 +350,7 @@ class TestProjeto(unittest.TestCase):
         #self.assertIsNotNone(idPassaro)
         res=lista_passaro(conn)
         res2=((idPassaro,"Araponga"),(idPassaro2,"Sabia"))
-        #self.assertCountEqual(res,res2)
-        print("sajijisajisaijsajisaijjisaijasijsa")
-        print(res)
-        print("sajijisajisaijsajisaijjisaijasijsa")
-  
+        self.assertCountEqual(res,res2)
 
 ########################################################
 #                       MUDA                   
