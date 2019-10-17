@@ -76,6 +76,9 @@ def adiciona_visualizacao_post(conn, id_post, id_usuario, aparelho, ip, browser,
 
 #adiciona like de usuario a post
 def adiciona_post_like(conn, id_post, id_usuario,post_like):
+
+    if(post_like != "Like" and post_like!="Deslike"):
+        raise ValueError(f'COMANDO NAO IDENTIFICADO')
     query = """
     INSERT INTO usuario_post_like (id_post, id_usuario,post_like)
     VALUES (%s, %s, %s)
@@ -102,13 +105,16 @@ def desativa_usuario(conn, id):
 def desativa_post(conn, id):
     with conn.cursor() as cursor:
         cursor.execute('UPDATE post SET ativo=0 WHERE id_post=%s', (id))
-  
-       
+        
 #Remove uma Preferencia dado um ID Usuario e Passaro
 def remove_preferencia_de_passaro(conn, id_usuario, id_passaro):
-        with conn.cursor() as cursor:
-            cursor.execute('DELETE FROM preferencia WHERE id_usuario=%s AND id_passaro=%s',(id_usuario, id_passaro))
+    with conn.cursor() as cursor:
+        cursor.execute('DELETE FROM preferencia WHERE id_usuario=%s AND id_passaro=%s',(id_usuario, id_passaro))
 
+#Remove Like ou Dislike no Post
+def remove_post_like(conn,id_post,id_usuario):
+    with conn.cursor() as cursor:
+        cursor.execute('DELETE FROM usuario_post_like WHERE id_usuario=%s AND id_post=%s',(id_usuario, id_post))
 
 ########################################################
 #                       STATUS                   
@@ -128,6 +134,15 @@ def esta_desativado_usuario(conn, id):
 def esta_desativado_post(conn, id):
     with conn.cursor() as cursor:
         cursor.execute('SELECT ativo FROM post WHERE id_post=%s',(id))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
+
+def esta_like_dislike(conn,id_post,id_usuario):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT post_like FROM usuario_post_like WHERE id_post=%s and id_usuario=%s',(id_post,id_usuario))
         res = cursor.fetchone()
         if res:
             return res[0]
@@ -185,6 +200,16 @@ def muda_nick_usuario(conn, id, novo_nick):
             cursor.execute('UPDATE usuario SET nick=%s where id_usuario=%s', (novo_nick, id))
         except pymysql.err.IntegrityError as e:
             raise ValueError('Não posso alterar nick do id {} para {} na tabela usuario'.format(id, novo_nick))
+
+def muda_like_post(conn, id_post,id_usuario,like):
+    if(like != "Like" and like!="Deslike"):
+        raise ValueError(f'COMANDO NAO IDENTIFICADO')
+    
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute('UPDATE usuario_post_like SET post_like=%s where id_usuario=%s AND id_post=%s',(like,id_usuario,id_post))
+        except pymysql.err.IntegrityError as e:
+            raise ValueError('Não posso alterar')
 
 
 
@@ -319,7 +344,6 @@ def lista_post_like(conn):
         res = cursor.fetchall()
         marcacoes = tuple(x[0:2] for x in res)
         return marcacoes
-
 
 ########################################################
 #                       PARSER                   

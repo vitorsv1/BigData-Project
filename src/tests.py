@@ -246,6 +246,22 @@ class TestProjeto(unittest.TestCase):
         res = lista_preferencia(conn)
         self.assertFalse(res)
 
+    def test_remove_post_like(self):
+        conn = self.__class__.connection
+        nick = "Jukes"
+        nome = "Junior"
+        sobrenome = "Desativa"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+        adiciona_usuario(conn, nick, nome, sobrenome, email, cidade)
+        idJukes = acha_usuario(conn, "Jukes")
+        adiciona_post(conn,idJukes,1,"Titulo","texto","url")
+        idPost=acha_post(conn,"Titulo")
+        remove_post_like(conn,idPost,idJukes)
+        res = lista_post_like(conn)
+        self.assertFalse(res)
+
+
 
 ########################################################
 #                       STATUS                   
@@ -299,6 +315,29 @@ class TestProjeto(unittest.TestCase):
 
         self.assertEqual(0,status1)
 
+    def test_esta_like_dislike(self):
+        conn = self.__class__.connection
+        nick = "Jukes"
+        nome = "Junior"
+        sobrenome = "Visualiza"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+        adiciona_usuario(conn,nick, nome, sobrenome, email, cidade)
+        adiciona_usuario(conn,"Jovi", nome, sobrenome, email, cidade)
+        idUsuario = acha_usuario(conn,nick)
+        idUsuario2 = acha_usuario(conn,"Jovi")
+        titulo= "Teste post"
+        texto = "aoskdoapsdk"
+        url = "sokdapodkpao.com"
+        adiciona_post(conn,idUsuario,1,titulo,texto, url)
+        idPost = acha_post(conn, titulo)
+        adiciona_post_like(conn,idPost,idUsuario2,"Like")
+        status=esta_like_dislike(conn,idPost,idUsuario2)
+        print(status)
+
+
+
+
       
 ########################################################
 #                       ACHA                   
@@ -320,7 +359,6 @@ class TestProjeto(unittest.TestCase):
         res= lista_usuario(conn)
         self.assertEqual(res[0],id)
 
-
     def test_acha_post(self):
         conn = self.__class__.connection
         nick = "Jukes"
@@ -340,14 +378,13 @@ class TestProjeto(unittest.TestCase):
         res=lista_post(conn)
         self.assertEqual(res[0],id_post)
 
-######### lista passaro faltando
     def test_acha_passaro(self):
         conn = self.__class__.connection
         adiciona_passaro(conn,"Araponga")
         idPassaro=acha_passaro(conn,"Araponga")
         adiciona_passaro(conn,"Sabia")
         idPassaro2=acha_passaro(conn,"Sabia")
-        #self.assertIsNotNone(idPassaro)
+        self.assertIsNotNone(idPassaro)
         res=lista_passaro(conn)
         res2=((idPassaro,"Araponga"),(idPassaro2,"Sabia"))
         self.assertCountEqual(res,res2)
@@ -380,6 +417,31 @@ class TestProjeto(unittest.TestCase):
 
         id_novo = acha_usuario(conn,'MecLord')
         self.assertEqual(id,id_novo)
+
+    def test_muda_like_post(self):
+        conn = self.__class__.connection
+
+        nick = "Jukes"
+        nome = "Junior"
+        sobrenome = "Cria"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+
+        adiciona_usuario(conn, nick, nome, sobrenome, email, cidade)
+        adiciona_usuario(conn, "Jukera", nome, sobrenome, email, cidade)
+        idUser1 = acha_usuario(conn,"Jukera")
+        idUser2= acha_usuario(conn,"Jukes")
+
+        adiciona_post(conn,idUser1,1,"Titulo","texto","URL")
+        idPost=acha_post(conn,"Titulo")
+        adiciona_post_like(conn,idPost,idUser2,"Like")
+        
+        muda_like_post(conn,idPost,idUser2,"Deslike")
+        
+        res=esta_like_dislike(conn,idPost,idUser2)
+
+        self.assertNotEqual("Like",res)
+
 
 ########################################################
 #                 MENCIONA e  MARCA                   
@@ -486,7 +548,6 @@ class TestProjeto(unittest.TestCase):
         
         res=lista_passaro(conn)
         res=list(zip(*res))[0]
-        print(res)
         self.assertCountEqual(res,passarosids)
    
     def test_lista_post(self):
@@ -632,7 +693,7 @@ class TestProjeto(unittest.TestCase):
         adiciona_post(conn,idUsuario1,1,"titulo","texto","url")
         idPost=acha_post(conn,"titulo")
         adiciona_post_like(conn,idPost,idUsuario2,"Like")
-        adiciona_post_like(conn,idPost,idUsuario2,"dislike")
+        adiciona_post_like(conn,idPost,idUsuario2,"Deslike")
         likes=lista_post_like(conn)
         likes2=((idPost,idUsuario2),(idPost,idUsuario3))
         self.assertCountEqual(likes,likes2)
