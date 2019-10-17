@@ -140,6 +140,7 @@ def esta_desativado_post(conn, id):
         else:
             return None
 
+#Retorna se o post esta Like ou Deslike pelo Usuario
 def esta_like_dislike(conn,id_post,id_usuario):
     with conn.cursor() as cursor:
         cursor.execute('SELECT post_like FROM usuario_post_like WHERE id_post=%s and id_usuario=%s',(id_post,id_usuario))
@@ -201,10 +202,11 @@ def muda_nick_usuario(conn, id, novo_nick):
         except pymysql.err.IntegrityError as e:
             raise ValueError('Não posso alterar nick do id {} para {} na tabela usuario'.format(id, novo_nick))
 
+#Muda condicao do Like
 def muda_like_post(conn, id_post,id_usuario,like):
     if(like != "Like" and like!="Deslike"):
         raise ValueError(f'COMANDO NAO IDENTIFICADO')
-    
+
     with conn.cursor() as cursor:
         try:
             cursor.execute('UPDATE usuario_post_like SET post_like=%s where id_usuario=%s AND id_post=%s',(like,id_usuario,id_post))
@@ -259,7 +261,7 @@ def lista_usuario(conn):
         usuarios = tuple(x[0] for x in res)
         return usuarios
 
-
+#Lista IDs e Especies de todos os Passaros
 def lista_passaro(conn):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_passaro,especie FROM passaro')
