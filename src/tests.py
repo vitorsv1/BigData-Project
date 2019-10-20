@@ -29,7 +29,6 @@ class TestProjeto(unittest.TestCase):
 #                        ADICIONA                   
 ########################################################
 
-
     def test_adiciona_usuario(self):
         conn = self.__class__.connection
         
@@ -262,7 +261,6 @@ class TestProjeto(unittest.TestCase):
         self.assertFalse(res)
 
 
-
 ########################################################
 #                       STATUS                   
 ########################################################
@@ -333,9 +331,6 @@ class TestProjeto(unittest.TestCase):
         idPost = acha_post(conn, titulo)
         adiciona_post_like(conn,idPost,idUsuario2,"Like")
         status=esta_like_dislike(conn,idPost,idUsuario2)
-        print(status)
-
-
 
 
       
@@ -437,7 +432,7 @@ class TestProjeto(unittest.TestCase):
         adiciona_post_like(conn,idPost,idUser2,"Like")
         
         muda_like_post(conn,idPost,idUser2,"Deslike")
-        
+
         res=esta_like_dislike(conn,idPost,idUser2)
 
         self.assertNotEqual("Like",res)
@@ -565,6 +560,26 @@ class TestProjeto(unittest.TestCase):
         res=lista_post(conn)
         self.assertCountEqual(res,postsids)
 
+    def test_lista_post_usuario(self):
+        conn = self.__class__.connection
+        adiciona_usuario(conn,"Jukes","Junior","Teste","teste@teste.com","testelandia")
+        idUsuario=acha_usuario(conn,"Jukes")
+   
+        adiciona_post(conn,idUsuario,1,"titulo1","ola","www")
+        adiciona_post(conn,idUsuario,1,"titulo2","ola","www")
+        adiciona_post(conn,idUsuario,1,"titulo3","ola","www")
+        adiciona_post(conn,idUsuario,1,"titulo4","ola","www")
+
+        idsPosts=[]
+        res=lista_post_usuario(conn,idUsuario)
+        for i in range(4,0,-1):
+            titulo="titulo{}".format(i)
+            idPost=acha_post(conn,titulo)
+            idsPosts.append(idPost)
+        
+        for i in range(len(idsPosts)):
+            self.assertEqual(idsPosts[i],res[i])
+        
     def test_lista_preferencia(self):
         conn = self.__class__.connection
         adiciona_usuario(conn,"Jukes","teste","teste","test@test","testlandia")

@@ -90,8 +90,6 @@ def adiciona_post_like(conn, id_post, id_usuario,post_like):
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Erro na inserção')
 
-
-
 ########################################################
 #                   DESATIVA e REMOVE                   
 ########################################################
@@ -130,7 +128,7 @@ def esta_desativado_usuario(conn, id):
         else:
             return None
 
-#Verifica se o usuário esta desativado pelo ID
+#Verifica se o post esta desativado pelo ID
 def esta_desativado_post(conn, id):
     with conn.cursor() as cursor:
         cursor.execute('SELECT ativo FROM post WHERE id_post=%s',(id))
@@ -273,6 +271,17 @@ def lista_passaro(conn):
 def lista_post(conn):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_post FROM post')
+        res = cursor.fetchall()
+        posts = tuple(x[0] for x in res)
+        return posts
+
+#Lista id de posts do usuario em ordem cronologica reversa
+def lista_post_usuario(conn,id_usuario):
+    query = """
+    SELECT id_post FROM post where id_usuario=%s order by id_post desc
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(query,(id_usuario))
         res = cursor.fetchall()
         posts = tuple(x[0] for x in res)
         return posts
