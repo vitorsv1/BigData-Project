@@ -18,6 +18,12 @@ especie varchar(32) UNIQUE KEY,
 PRIMARY KEY (id_passaro)
 );
 
+CREATE TABLE IF NOT EXISTS lugar (
+id_lugar int auto_increment NOT NULL,
+lugar varchar(32) UNIQUE KEY,
+PRIMARY KEY (id_lugar)
+);
+
 CREATE TABLE IF NOT EXISTS preferencia (
 id_usuario int NOT NULL,
 id_passaro int NOT NULL,
@@ -33,7 +39,7 @@ id_usuario int,
 ativo tinyint default 1,
 titulo varchar(32) NOT NULL UNIQUE,
 texto text,
-url varchar(32),
+url varchar(1000),
 foreign key (id_usuario) references usuario(id_usuario)
 );
 
@@ -53,14 +59,22 @@ FOREIGN KEY (id_post) REFERENCES post(id_post),
 FOREIGN KEY (id_passaro) REFERENCES passaro(id_passaro)
 );
 
+CREATE TABLE IF NOT EXISTS marca_lugar (
+id_lugar int,
+id_post int,
+primary key (id_lugar, id_post),
+FOREIGN KEY (id_post) REFERENCES post(id_post),
+FOREIGN KEY (id_lugar) REFERENCES lugar(id_lugar)
+);
+
 CREATE TABLE IF NOT EXISTS visualizacao (
+id_visualizacao int PRIMARY KEY auto_increment NOT NULL,
 id_post int,
 id_usuario int,
 aparelho varchar(32),
 ip varchar(32),
 browser varchar(32),
 data_visualizacao timestamp,
-PRIMARY KEY (id_post, id_usuario),
 FOREIGN KEY (id_post) REFERENCES post(id_post),
 FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );

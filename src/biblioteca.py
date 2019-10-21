@@ -2,8 +2,8 @@ import io, json, logging, os, os.path, subprocess, re, unittest, pymysql
 
 connection = pymysql.connect(
     host='localhost',
-    user='root',
-    password='',
+    user='megadados',
+    password='megadados2019',
     database='red_soc_passaros')
 
 ########################################################
@@ -31,7 +31,19 @@ def adiciona_passaro(conn,especie):
         try:
             cursor.execute(query, (especie))
         except pymysql.err.IntegrityError as e:
-            raise ValueError(f'Não posso inserir {especie} na tabela usuario')
+            raise ValueError(f'Não posso inserir {especie} na tabela passaro')
+
+# Adiciona um passaro na tabela passaro
+def adiciona_lugar(conn,lugar):
+    query = """
+    INSERT INTO lugar (lugar) 
+    VALUES (%s);
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (lugar))
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Não posso inserir {lugar} na tabela lugar')
 
 # Adiciona um post
 def adiciona_post(conn, id_usuario,ativo,titulo, texto = None, url = None):
@@ -48,10 +60,13 @@ def adiciona_post(conn, id_usuario,ativo,titulo, texto = None, url = None):
     
     usuarios_mencionados=parser_usuario(texto)
     passaros_mencionados=parser_passaro(texto)
+    lugares_mencionados=parser_lugar(texto)
     for i in usuarios_mencionados:
         menciona_usuario_em_post(conn,acha_post(conn,titulo),acha_usuario(conn,i))
     for j in passaros_mencionados:
         marca_passaro_em_post(conn,acha_passaro(conn,j),acha_post(conn,titulo))
+    for k in lugares_mencionados:
+        marca_lugar_em_post(conn, acha_lugar(conn,k), acha_post(conn, titulo))
 
 # Adiciona um Usuario e um Passaro a tabela Preferencia
 def adiciona_preferencia_a_passaro(conn, id_usuario, id_passaro):
@@ -162,7 +177,7 @@ def acha_usuario(conn, nick):
         else:
             return None
 
-# Acha um passaro pela Especia
+# Acha um id_passaro pela Especia
 def acha_passaro(conn, especie):
     with conn.cursor() as cursor:
         cursor.execute('SELECT id_passaro FROM passaro WHERE especie = %s', (especie))
@@ -171,6 +186,17 @@ def acha_passaro(conn, especie):
             return res[0]
         else:
             return None
+
+# Acha um id_lugar pela Lugar
+def acha_lugar(conn, lugar):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT id_lugar FROM lugar WHERE lugar = %s', (lugar))
+        res = cursor.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
+
 
 # Acha um post pelo Titulo
 def acha_post(conn, titulo):
@@ -245,7 +271,18 @@ def marca_passaro_em_post(conn, id_passaro, id_post):
         except pymysql.err.IntegrityError as e:
             raise ValueError(f'Ja tentou adicionar')
 
-
+# Marca um passaro em um post pelos IDs
+def marca_lugar_em_post(conn, id_lugar, id_post):
+    query = """
+    INSERT INTO marca_lugar (id_lugar,id_post) 
+    VALUES (%s, %s);
+    """
+    with conn.cursor() as cursor:
+        try:
+            cursor.execute(query, (id_lugar,id_post))
+           # 
+        except pymysql.err.IntegrityError as e:
+            raise ValueError(f'Ja tentou adicionar')
 
 ########################################################
 #                       LISTA                   
@@ -266,6 +303,14 @@ def lista_passaro(conn):
         res = cursor.fetchall()
         passaros = tuple(x[0:2] for x in res)
         return passaros
+
+#Lista IDs e Especies de todos os Lugares
+def lista_lugar(conn):
+    with conn.cursor() as cursor:
+        cursor.execute('SELECT * FROM lugar')
+        res = cursor.fetchall()
+        lugar = tuple(x[0:2] for x in res)
+        return lugar
 
 #Lista os IDs de todos os posts
 def lista_post(conn):
@@ -345,6 +390,18 @@ def lista_marca_passaro(conn):
         marcacoes = tuple(x[0:2] for x in res)
         return marcacoes
 
+#Lista os lugar marcados
+def lista_marca_lugar(conn):
+    query="""
+    SELECT * FROM marca_lugar
+    """
+
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        res = cursor.fetchall()
+        marcacoes = tuple(x[0:2] for x in res)
+        return marcacoes
+
 #lista ids de likes e dislikes do post
 def lista_post_like(conn):
     query="""
@@ -355,6 +412,74 @@ def lista_post_like(conn):
         res = cursor.fetchall()
         marcacoes = tuple(x[0:2] for x in res)
         return marcacoes
+
+# Lista os uma tupla com nick, numero de likes recebidos, cidade de Usuario
+def lista_usuario_popular_cidade(conn):
+    query = """
+    SELECT usuario_popular_cidade.* FROM 
+    (
+    SELECT nick,count(post_like) AS nLikes,cidade
+    from usuario
+    inner join post using (id_usuario) 
+    inner join usuario_post_like using(id_post)
+    group by nick )usuario_popular_cidade
+    group by cidade
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        res = cursor.fetchall()
+        usuarios = tuple(x for x in res)
+        return usuarios
+
+# Lista Usuarios que referenciaram
+def lista_usuarios_refenciados(conn,id_usuario):
+    query="""
+    select usuario.id_usuario, usuario.nick from usuario
+    inner join post using(id_usuario)
+    inner join mencao using(id_post)
+    where mencao.id_usuario = %s 
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(query,(id_usuario))
+        res = cursor.fetchall()
+        mencionadores = tuple(x for x in res)
+        return mencionadores
+
+# Lista quantidade de visualizacoes
+def lista_visualizacao_quantidade(conn):
+    query="""
+    select count(id_visualizacao) from visualizacao
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        res = cursor.fetchall()
+        quantidade = tuple(x for x in res)
+        return quantidade
+
+# Lista tabela cruzada de quantidade de aparelhos por tipo e por browser
+def lista_visualizacao_tipo_browser(conn):
+    query="""
+    select count(id_visualizacao), aparelho, browser from visualizacao
+    group by aparelho, browser
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        res = cursor.fetchall()
+        quantidade = tuple(x for x in res)
+        return quantidade
+
+def lista_url_passaro(conn):
+    query="""
+    select post.url,passaro.especie from post
+    inner join marca_passaro using(id_post)
+    inner join passaro using(id_passaro)
+    where url is not null;
+    """
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        res = cursor.fetchall()
+        quantidade = tuple(x for x in res)
+        return quantidade
 
 ########################################################
 #                       PARSER                   
@@ -378,4 +503,11 @@ def parser_passaro(texto):
         t.append(txt[i][1:])
     return t
 
-    
+# Parser para procurar lugares marcados 
+# retorna lista dos lugares marcados em ordem
+def parser_lugar(texto):
+    t = []
+    txt = re.findall(r"&\w+", texto)
+    for i in range(len(txt)):
+        t.append(txt[i][1:])
+    return t

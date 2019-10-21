@@ -55,7 +55,7 @@ class TestProjeto(unittest.TestCase):
 
         try:
             adiciona_passaro(conn, especie)
-            self.fail('Não deveria ter adicionado o mesmo usuario duas vezes')
+            self.fail('Não deveria ter adicionado o mesmo passaro duas vezes')
         except ValueError as e:
             pass
         
@@ -63,6 +63,25 @@ class TestProjeto(unittest.TestCase):
         self.assertIsNotNone(id)
 
         id = acha_passaro(conn, 'pokadskopdsa')
+        self.assertIsNone(id)   
+
+    def test_adiciona_lugar(self):
+        conn = self.__class__.connection
+        
+        lugar = "Londres"
+
+        adiciona_lugar(conn, lugar)
+
+        try:
+            adiciona_lugar(conn, lugar)
+            self.fail('Não deveria ter adicionado o mesmo lugar duas vezes')
+        except ValueError as e:
+            pass
+        
+        id = acha_lugar(conn, lugar)
+        self.assertIsNotNone(id)
+
+        id = acha_lugar(conn, 'pokadskopdsa')
         self.assertIsNone(id)   
 
     def test_adiciona_post(self):
@@ -137,12 +156,12 @@ class TestProjeto(unittest.TestCase):
         id_post = acha_post(conn, titulo)
 
         adiciona_visualizacao_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
+        adiciona_visualizacao_post(conn, id_post, id, "Linux", "192.129.3.1","Safari", "2019-02-01")
+        adiciona_visualizacao_post(conn, id_post, id, "Windows", "192.129.3.1","Firefox", "2019-02-01")
 
-        try:
-            adiciona_visualizacao_post(conn, id_post, id, "Android", "192.129.3.1","Chrome", "2019-02-01")
-            self.fail("Não deveria adicionar uma visualizacao nova")
-        except ValueError as e:
-            pass
+        res = lista_visualizacao_quantidade(conn)
+        self.assertEqual(res[0][0],3)
+        
 
     def test_adiociona_post_like(self):
         conn = self.__class__.connection
@@ -384,6 +403,17 @@ class TestProjeto(unittest.TestCase):
         res2=((idPassaro,"Araponga"),(idPassaro2,"Sabia"))
         self.assertCountEqual(res,res2)
 
+    def test_acha_lugar(self):
+        conn = self.__class__.connection
+        adiciona_lugar(conn,"Londres")
+        idlugar=acha_lugar(conn,"Londres")
+        adiciona_lugar(conn,"SaoPaulo")
+        idlugar2=acha_lugar(conn,"SaoPaulo")
+        self.assertIsNotNone(idlugar)
+        res=lista_lugar(conn)
+        res2=((idlugar,"Londres"),(idlugar2,"SaoPaulo"))
+        self.assertCountEqual(res,res2)
+
 ########################################################
 #                       MUDA                   
 ########################################################
@@ -501,6 +531,33 @@ class TestProjeto(unittest.TestCase):
 
         self.assertEqual(marcacoes[0], t1)
         self.assertEqual(marcacoes[1], t2)
+    
+    def test_marca_lugar_em_post(self):
+        conn = self.__class__.connection
+        
+        nick = "Ju"
+        nome = "Junior"
+        sobrenome = "Desativa"
+        email = "junior.test@hotmail.com"
+        cidade = "Testlandia"
+        adiciona_usuario(conn, nick, nome, sobrenome, email, cidade)
+        idJu = acha_usuario(conn, "Ju")
+        
+        adiciona_lugar(conn, "Londres")
+        adiciona_lugar(conn, "SaoPaulo")
+        
+        idLondres = acha_lugar(conn, "Londres")
+        idSaoPaulo = acha_lugar(conn, "SaoPaulo")
+        
+        adiciona_post(conn, idJu,1, "Breskein", "Muito legal esse &Londres &SaoPaulo","askdpaosd.com")
+        idPost = acha_post(conn, "Breskein")
+        
+        marcacoes = lista_marca_lugar(conn)
+        t1 = (idLondres, idPost)
+        t2 = (idSaoPaulo, idPost)
+
+        self.assertEqual(marcacoes[0], t1)
+        self.assertEqual(marcacoes[1], t2)
 
 
 
@@ -544,6 +601,21 @@ class TestProjeto(unittest.TestCase):
         res=lista_passaro(conn)
         res=list(zip(*res))[0]
         self.assertCountEqual(res,passarosids)
+
+    def test_lista_lugar(self):
+        conn = self.__class__.connection
+        res=lista_lugar(conn)
+        self.assertFalse(res)
+        
+        lugaresids=[]
+        for i in range(3):
+            lugar="Londres{}".format(i)
+            adiciona_lugar(conn,lugar)
+            lugaresids.append(acha_lugar(conn,lugar))
+        
+        res=lista_lugar(conn)
+        res=list(zip(*res))[0]
+        self.assertCountEqual(res,lugaresids)
    
     def test_lista_post(self):
         conn = self.__class__.connection
@@ -654,7 +726,7 @@ class TestProjeto(unittest.TestCase):
         res=lista_posts_visualizados_usuario(conn,id)
         self.assertCountEqual(res,postsids)
 
-    def teste_lista_mencoes(self):
+    def test_lista_mencoes(self):
 
         conn = self.__class__.connection
         adiciona_usuario(conn,"Jukes","teste","teste","test@test","testlandia")
@@ -675,7 +747,7 @@ class TestProjeto(unittest.TestCase):
         
         self.assertCountEqual(mencoes1,mencoes2)
 
-    def lista_marca_passaro(self):
+    def test_lista_marca_passaro(self):
         conn = self.__class__.connection
         adiciona_usuario(conn,"Jukes","teste","teste","test@test","testlandia")
         adiciona_passaro(conn,"Araponga")
@@ -696,7 +768,28 @@ class TestProjeto(unittest.TestCase):
         
         self.assertCountEqual(marcacoes1,marcacoes2)
 
-    def lista_post_like(self):
+    def test_lista_marca_lugar(self):
+        conn = self.__class__.connection
+        adiciona_usuario(conn,"Jukes","teste","teste","test@test","testlandia")
+        adiciona_lugar(conn,"Londres")
+        adiciona_lugar(conn,"SaoPaulo")
+    
+        idUsuario1=acha_usuario(conn,"Jukes")
+        idlugar1=acha_lugar(conn,"Londres")
+        idlugar2=acha_lugar(conn,"SaoPaulo")
+
+        adiciona_post(conn,idUsuario1,1,"titulo","texto","url")
+        idPost=acha_post(conn,"titulo")
+
+        marca_lugar_em_post(conn,idlugar1,idPost)
+        marca_lugar_em_post(conn,idlugar2,idPost)
+
+        marcacoes1=lista_marca_lugar(conn)
+        marcacoes2=((idlugar1,idPost),(idlugar2,idPost))
+        
+        self.assertCountEqual(marcacoes1,marcacoes2)
+
+    def test_lista_post_like(self):
         conn = self.__class__.connection
         adiciona_usuario(conn,"Jukes","teste","teste","test@test","testlandia")
         adiciona_usuario(conn,"Jovi","teste","teste","test@test","testlandia")
@@ -708,10 +801,114 @@ class TestProjeto(unittest.TestCase):
         adiciona_post(conn,idUsuario1,1,"titulo","texto","url")
         idPost=acha_post(conn,"titulo")
         adiciona_post_like(conn,idPost,idUsuario2,"Like")
-        adiciona_post_like(conn,idPost,idUsuario2,"Deslike")
+        adiciona_post_like(conn,idPost,idUsuario3,"Deslike")
         likes=lista_post_like(conn)
         likes2=((idPost,idUsuario2),(idPost,idUsuario3))
         self.assertCountEqual(likes,likes2)
+
+    def test_lista_usuario_popular_cidade(self):
+        conn = self.__class__.connection
+        adiciona_usuario(conn,"Jukes","teste","teste","test@test","sp")
+        adiciona_usuario(conn,"Jovi","teste","teste","test@test","rj")
+        adiciona_usuario(conn,"Rakin","teste","teste","test@test","sp")
+        idUsuario1=acha_usuario(conn,"Jukes")
+        idUsuario2=acha_usuario(conn,"Jovi")
+        idUsuario3=acha_usuario(conn,"Rakin")
+
+        adiciona_post(conn,idUsuario1,1,"titulo1","texto","url")
+        idPost1=acha_post(conn,"titulo1")
+        adiciona_post(conn,idUsuario1,1,"titulo2","texto","url")
+        idPost2=acha_post(conn,"titulo2")
+        adiciona_post(conn,idUsuario2,1,"titulo3","texto","url")
+        idPost3=acha_post(conn,"titulo3")
+        adiciona_post(conn,idUsuario3,1,"titulo4","texto","url")
+        idPost4=acha_post(conn,"titulo4")
+
+        adiciona_post_like(conn,idPost1,idUsuario2,"Like")
+        adiciona_post_like(conn,idPost1,idUsuario3,"Like")
+        adiciona_post_like(conn,idPost2,idUsuario2,"Like")
+        adiciona_post_like(conn,idPost2,idUsuario3,"Like")
+        adiciona_post_like(conn,idPost3,idUsuario1,"Like")
+        adiciona_post_like(conn,idPost4,idUsuario3,"Like")
+        
+        nlikesJukes = 4
+        nlikesJovi = 1
+
+        res = lista_usuario_popular_cidade(conn)
+        
+        self.assertEqual(res[0][1], nlikesJukes)
+        self.assertEqual(res[1][1], nlikesJovi)
+        
+    def test_lista_usuarios_refenciados(self):
+            conn = self.__class__.connection
+            adiciona_usuario(conn,"Jukes","teste","teste","test@test","testlandia")
+            adiciona_usuario(conn,"Jovi","teste","teste","test@test","testlandia")
+            adiciona_usuario(conn,"Rakin","teste","teste","test@test","testlandia")
+            idUsuario1=acha_usuario(conn,"Jukes")
+            idUsuario2=acha_usuario(conn,"Jovi")
+            idUsuario3=acha_usuario(conn,"Rakin")
+
+            adiciona_post(conn,idUsuario1,1,"titulo","texto","url")
+            adiciona_post(conn,idUsuario1,1,"titulo2","texto","url")
+            adiciona_post(conn,idUsuario2,1,"titulo3","texto","url")
+
+            idPost1=acha_post(conn,"titulo")
+            idPost2=acha_post(conn,"titulo2")
+            idPost3=acha_post(conn,"titulo3")
+
+            menciona_usuario_em_post(conn,idPost1,idUsuario2)
+            menciona_usuario_em_post(conn,idPost3,idUsuario2)
+        
+            res = lista_usuarios_refenciados(conn,idUsuario2)
+            res2 = ((idUsuario1, "Jukes"), (idUsuario2, "Jovi"))
+            self.assertCountEqual(res, res2)
+
+    def test_lista_visualizacao_tipo_browser(self):
+            conn = self.__class__.connection
+            adiciona_usuario(conn,"Jukes","teste","teste","test@test","testlandia")
+            adiciona_usuario(conn,"Jovi","teste","teste","test@test","testlandia")
+            idUsuario1=acha_usuario(conn,"Jukes")
+            idUsuario2=acha_usuario(conn,"Jovi")
+
+            adiciona_post(conn,idUsuario1,1,"titulo","texto","url")
+            idPost = acha_post(conn, "titulo")
+
+            adiciona_visualizacao_post(conn, idPost, idUsuario2, "Android", "192.123", "Chrome",  "2019-02-01")
+            adiciona_visualizacao_post(conn, idPost, idUsuario1, "Android", "192.123", "Chrome",  "2019-02-01")
+            adiciona_visualizacao_post(conn, idPost, idUsuario2, "Linux", "192.123", "Safari",  "2019-02-01")
+            adiciona_visualizacao_post(conn, idPost, idUsuario1, "Linux", "192.123", "Safari",  "2019-02-01")
+            adiciona_visualizacao_post(conn, idPost, idUsuario2, "Apple", "192.123", "Firefox",  "2019-02-01")
+
+            res = lista_visualizacao_tipo_browser(conn)
+            res2 = ((2, 'Android', 'Chrome'), (2, 'Linux', 'Safari'), (1, 'Apple', 'Firefox'))
+
+            self.assertCountEqual(res, res2)
+
+    def test_lista_url_passaro(self):
+            conn = self.__class__.connection
+            adiciona_usuario(conn,"Jukes","teste","teste","test@test","testlandia")
+            idUsuario1=acha_usuario(conn,"Jukes")
+
+            adiciona_post(conn,idUsuario1,1,"post1","texto","url")
+            idPost1 = acha_post(conn, "post1")
+            adiciona_post(conn,idUsuario1,1,"post2","texto")
+            idPost2 = acha_post(conn, "post2")
+            adiciona_post(conn,idUsuario1,1,"post3","texto","url")
+            idPost3 = acha_post(conn, "post3")
+            
+            adiciona_passaro(conn, "Canario")
+            idPassaro1 = acha_passaro(conn, "Canario")
+            adiciona_passaro(conn, "Bird")
+            idPassaro2 = acha_passaro(conn, "Bird")
+
+            marca_passaro_em_post(conn,idPassaro1,idPost1)
+            marca_passaro_em_post(conn,idPassaro1,idPost2)
+            marca_passaro_em_post(conn,idPassaro2,idPost3)
+
+            res = lista_url_passaro(conn)
+            res2 = (('url', 'Canario'), ('url', 'Bird'))
+
+            self.assertCountEqual(res, res2)
 
 
 
