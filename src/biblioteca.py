@@ -468,6 +468,7 @@ def lista_visualizacao_tipo_browser(conn):
         quantidade = tuple(x for x in res)
         return quantidade
 
+# Lista as tags do passaro com url da foto
 def lista_url_passaro(conn):
     query="""
     select post.url,passaro.especie from post
